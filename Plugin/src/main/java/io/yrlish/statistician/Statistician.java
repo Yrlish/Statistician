@@ -25,35 +25,44 @@
 package io.yrlish.statistician;
 
 import com.google.inject.Inject;
+import io.yrlish.statistician.statistics.server.Uptime;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
-import java.nio.file.Path;
-
-@Plugin(id = "statistician", name = "Statistician", version = "0.1.0")
+@Plugin(id = PluginInfo.ID, name = PluginInfo.NAME, description = PluginInfo.DESCRIPTION, version = PluginInfo.VERSION, url = PluginInfo.URL)
 public class Statistician {
-    @Inject
     private static Logger logger;
+    private static Statistician instance;
+    private static Game game;
 
     @Inject
-    @ConfigDir(sharedRoot = false)
-    private Path configDir;
+    public Statistician(Logger logger, Game game) {
+        Statistician.instance = this;
+        Statistician.logger = logger;
+        Statistician.game = game;
+    }
 
-    private static Statistician instance;
+    @Listener
+    public void onPreInit(GamePreInitializationEvent preInitEvent) {
+        // TODO: Load configuration
 
-    private Game game;
+
+        // TODO: Connect database
+
+
+        // TODO: Register listeners
+        Sponge.getEventManager().registerListeners(this, new Uptime());
+    }
 
     @Listener
     public void onServerInit(GameInitializationEvent event) {
-        getLogger().info("Statistician is loading...");
-        game = Sponge.getGame();
+        // TODO: Init command(s)
 
-        // Init commands
     }
 
     public static Logger getLogger() {
@@ -62,5 +71,9 @@ public class Statistician {
 
     public static Statistician getInstance() {
         return instance;
+    }
+
+    public static Game getGame() {
+        return game;
     }
 }
