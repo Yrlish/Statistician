@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Statistician">
+    <output-path>D:/SpongeVanilla/mods</output-path>
+    <root id="archive" name="Statistician.jar">
+      <element id="module-output" name="Plugin" />
+    </root>
+  </artifact>
+</component>

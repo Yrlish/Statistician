@@ -31,7 +31,7 @@
     <packaging>jar</packaging>
 
     <name>Statistician</name>
-    <version>0.1.0</version>
+    <version>0.0.1</version>
     <description>Sponge plugin that record statistics about the server and its users.</description>
     <url>https://bitbucket.org/YrlishTeam/statistician</url>
 

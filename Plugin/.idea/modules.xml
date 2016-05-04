@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/statistician.iml" filepath="$PROJECT_DIR$/statistician.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Plugin.iml" filepath="$PROJECT_DIR$/Plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Sql/Sql.iml" filepath="$PROJECT_DIR$/../Sql/Sql.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Webportal/Webportal.iml" filepath="$PROJECT_DIR$/../Webportal/Webportal.iml" />
     </modules>
   </component>
 </project>
