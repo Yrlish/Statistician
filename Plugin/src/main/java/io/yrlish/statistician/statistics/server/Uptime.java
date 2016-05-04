@@ -25,11 +25,15 @@
 package io.yrlish.statistician.statistics.server;
 
 import io.yrlish.statistician.Statistician;
+import io.yrlish.statistician.database.DatabaseManager;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.scheduler.Scheduler;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
@@ -45,8 +49,7 @@ public class Uptime {
         Scheduler scheduler = Sponge.getScheduler();
         scheduler.createTaskBuilder()
                 .async()
-                .delay(30, TimeUnit.SECONDS)
-                .interval(5, TimeUnit.MINUTES)
+                .interval(30, TimeUnit.SECONDS)
                 .execute(new UptimeTask())
                 .submit(Statistician.getInstance());
     }
@@ -56,9 +59,24 @@ public class Uptime {
         public void run() {
             lastUptimeCheck = ZonedDateTime.now(ZoneOffset.UTC);
 
-            long diff = lastUptimeCheck.toEpochSecond() - serverStarted.toEpochSecond();
+            updateRow();
+        }
 
-            // TODO: Save to database
+        private void updateRow() {
+            DatabaseManager databaseManager = new DatabaseManager();
+
+            try (Connection conn = databaseManager.getConnection()) {
+                String sql = "INSERT INTO statistician.server_uptime (start, stop) " +
+                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE stop=VALUES(stop);";
+                try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                    preparedStatement.setLong(1, serverStarted.toEpochSecond());
+                    preparedStatement.setLong(2, lastUptimeCheck.toEpochSecond());
+
+                    preparedStatement.execute();
+                }
+            } catch (SQLException e) {
+                Statistician.getLogger().error("Could not query database", e);
+            }
         }
     }
 }
