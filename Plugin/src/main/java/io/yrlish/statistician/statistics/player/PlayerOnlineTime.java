@@ -37,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class PlayerOnlineTime {
         Scheduler scheduler = Sponge.getScheduler();
         scheduler.createTaskBuilder()
                 .async()
-                .interval(1, TimeUnit.MINUTES)
+                .interval(2, TimeUnit.SECONDS)
                 .execute(new Task())
                 .submit(Statistician.getInstance());
     }
@@ -75,8 +76,10 @@ public class PlayerOnlineTime {
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
         User user = event.getTargetUser();
 
-        QueueItem queueItem = new QueueItem(user.getUniqueId(), user.getName(), lastJoinTime.get(user.getUniqueId()), now, event.getConnection().getAddress());
-        queue.add(queueItem);
+        if (lastJoinTime.containsKey(user.getUniqueId())) {
+            QueueItem queueItem = new QueueItem(user.getUniqueId(), user.getName(), lastJoinTime.get(user.getUniqueId()), now, event.getConnection().getAddress());
+            queue.add(queueItem);
+        }
     }
 
     private class Task implements Runnable {
@@ -85,22 +88,22 @@ public class PlayerOnlineTime {
             ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
             for (Player player : Statistician.getGame().getServer().getOnlinePlayers()) {
-                QueueItem queueItem = new QueueItem(player.getUniqueId(), player.getName(), lastJoinTime.get(player.getUniqueId()), now, player.getConnection().getAddress());
-                queue.add(queueItem);
+                if (lastJoinTime.containsKey(player.getUniqueId())) {
+                    QueueItem queueItem = new QueueItem(player.getUniqueId(), player.getName(), lastJoinTime.get(player.getUniqueId()), now, player.getConnection().getAddress());
+                    queue.add(queueItem);
+                }
             }
 
             DatabaseManager databaseManager = new DatabaseManager();
             try (Connection con = databaseManager.getConnection()) {
-                String sql = "INSERT INTO statistician.player_list (uuid, display_name) " +
+                String sql = "INSERT INTO player_list (uuid, display_name) " +
                         "VALUES (?, ?) ON DUPLICATE KEY UPDATE display_name=VALUES(display_name);";
 
-                String sql2 = "INSERT INTO statistician.player_login_history (uuid, login, logout, ip) " +
-                        "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE logout=VALUES(logout);";
+                String sql2 = "INSERT INTO player_login_history (uuid, login, logout, ip) " +
+                        "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE login=VALUES(login), logout=VALUES(logout);";
 
                 try (PreparedStatement preparedStatement = con.prepareStatement(sql);
                      PreparedStatement preparedStatement2 = con.prepareStatement(sql2)) {
-
-                    con.setAutoCommit(false);
 
                     QueueItem item;
                     while ((item = queue.poll()) != null) {
@@ -109,8 +112,8 @@ public class PlayerOnlineTime {
                         preparedStatement.addBatch();
 
                         preparedStatement2.setString(1, item.getUuid().toString());
-                        preparedStatement2.setLong(2, item.getJoined().toEpochSecond());
-                        preparedStatement2.setLong(3, item.getLastActive().toEpochSecond());
+                        preparedStatement2.setTimestamp(2, Timestamp.from(item.getJoined().toInstant()));
+                        preparedStatement2.setTimestamp(3, Timestamp.from(item.getLastActive().toInstant()));
                         preparedStatement2.setString(4, item.getAddress().toString());
                         preparedStatement2.addBatch();
                     }
@@ -120,6 +123,8 @@ public class PlayerOnlineTime {
                 }
             } catch (SQLException e) {
                 Statistician.getLogger().error("Could not query database", e);
+            } catch (NullPointerException e) {
+                Statistician.getLogger().error("NullPointerException", e);
             }
         }
     }

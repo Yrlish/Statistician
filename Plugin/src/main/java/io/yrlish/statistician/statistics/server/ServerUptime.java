@@ -34,6 +34,7 @@ import org.spongepowered.api.scheduler.Scheduler;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class ServerUptime {
         Scheduler scheduler = Sponge.getScheduler();
         scheduler.createTaskBuilder()
                 .async()
-                .interval(1, TimeUnit.MINUTES)
+                .interval(30, TimeUnit.SECONDS)
                 .execute(new Task())
                 .submit(Statistician.getInstance());
     }
@@ -67,10 +68,10 @@ public class ServerUptime {
 
             try (Connection conn = databaseManager.getConnection()) {
                 String sql = "INSERT INTO statistician.server_uptime (start, stop) " +
-                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE stop=VALUES(stop);";
+                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE start=VALUES(start), stop=VALUES(stop);";
                 try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-                    preparedStatement.setLong(1, serverStarted.toEpochSecond());
-                    preparedStatement.setLong(2, lastUptimeCheck.toEpochSecond());
+                    preparedStatement.setTimestamp(1, Timestamp.from(serverStarted.toInstant()));
+                    preparedStatement.setTimestamp(2, Timestamp.from(lastUptimeCheck.toInstant()));
 
                     preparedStatement.execute();
                 }
