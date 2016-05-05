@@ -25,21 +25,30 @@
 package io.yrlish.statistician;
 
 import com.google.inject.Inject;
+import io.yrlish.statistician.config.Config;
 import io.yrlish.statistician.statistics.player.PlayerOnlineTime;
 import io.yrlish.statistician.statistics.server.ServerUptime;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+
+import java.io.File;
 
 @Plugin(id = PluginInfo.ID, name = PluginInfo.NAME, description = PluginInfo.DESCRIPTION, version = PluginInfo.VERSION, url = PluginInfo.URL)
 public class Statistician {
     private static Logger logger;
     private static Statistician instance;
     private static Game game;
+    private static Config configManager;
+
+    @Inject
+    @ConfigDir(sharedRoot = false)
+    private File configDir;
 
     @Inject
     public Statistician(Logger logger, Game game) {
@@ -50,8 +59,11 @@ public class Statistician {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        // TODO: Load configuration
-
+        // Load config
+        Statistician.configManager = new Config(configDir);
+        if (!configManager.load()) {
+            return;
+        }
 
         // Register listeners
         Sponge.getEventManager().registerListeners(this, new ServerUptime());
@@ -74,5 +86,9 @@ public class Statistician {
 
     public static Game getGame() {
         return game;
+    }
+
+    public static Config getConfigManager() {
+        return configManager;
     }
 }

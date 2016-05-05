@@ -24,6 +24,7 @@
 
 package io.yrlish.statistician.database;
 
+import io.yrlish.statistician.Statistician;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
 
@@ -32,9 +33,15 @@ import java.sql.SQLException;
 
 public class DatabaseManager {
     private static SqlService sqlService;
-    private String jdbcUrl = "jdbc:mysql://statistician:statistician@localhost/statistician"; // TODO: Use credentials from configuration
+    private final String jdbcUrl;
 
     public DatabaseManager() {
+        jdbcUrl = String.format("jdbc:mysql://%s:%s@%s:%s/%s",
+                Statistician.getConfigManager().getConfiguration().getDatabaseUser(),
+                Statistician.getConfigManager().getConfiguration().getDatabasePass(),
+                Statistician.getConfigManager().getConfiguration().getDatabaseHost(),
+                Statistician.getConfigManager().getConfiguration().getDatabasePort(),
+                Statistician.getConfigManager().getConfiguration().getDatabaseName());
     }
 
     public Connection getConnection() throws SQLException {

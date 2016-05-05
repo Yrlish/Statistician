@@ -1,0 +1,1 @@
+Statistician.getLogger().error("", e);

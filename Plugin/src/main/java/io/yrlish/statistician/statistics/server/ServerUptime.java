@@ -26,7 +26,6 @@ package io.yrlish.statistician.statistics.server;
 
 import io.yrlish.statistician.Statistician;
 import io.yrlish.statistician.database.DatabaseManager;
-import io.yrlish.statistician.exception.ExceptionHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
@@ -76,7 +75,7 @@ public class ServerUptime {
                     preparedStatement.execute();
                 }
             } catch (SQLException e) {
-                ExceptionHandler.handle(e);
+                Statistician.getLogger().error("Could not query database", e);
             }
         }
     }
