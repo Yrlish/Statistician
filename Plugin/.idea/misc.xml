@@ -45,6 +45,9 @@
       <item index="1" class="java.lang.String" itemvalue="org.spongepowered.api.plugin.Plugin" />
     </list>
   </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="JSX" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
