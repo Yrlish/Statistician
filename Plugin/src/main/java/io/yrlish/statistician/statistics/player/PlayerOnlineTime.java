@@ -55,8 +55,8 @@ public class PlayerOnlineTime {
         Scheduler scheduler = Sponge.getScheduler();
         scheduler.createTaskBuilder()
                 .async()
-                .interval(10, TimeUnit.SECONDS)
-                .execute(new SaveToDatabase())
+                .interval(1, TimeUnit.MINUTES)
+                .execute(new Task())
                 .submit(Statistician.getInstance());
     }
 
@@ -80,7 +80,7 @@ public class PlayerOnlineTime {
         queue.add(queueItem);
     }
 
-    private class SaveToDatabase implements Runnable {
+    private class Task implements Runnable {
         @Override
         public void run() {
             ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
@@ -116,13 +116,9 @@ public class PlayerOnlineTime {
                         preparedStatement2.addBatch();
                     }
 
-
                     preparedStatement.executeBatch();
                     preparedStatement2.executeBatch();
-
-                    con.setAutoCommit(true);
                 }
-
             } catch (SQLException e) {
                 ExceptionHandler.handle(e);
             }

@@ -50,12 +50,12 @@ public class ServerUptime {
         Scheduler scheduler = Sponge.getScheduler();
         scheduler.createTaskBuilder()
                 .async()
-                .interval(30, TimeUnit.SECONDS)
-                .execute(new UptimeTask())
+                .interval(1, TimeUnit.MINUTES)
+                .execute(new Task())
                 .submit(Statistician.getInstance());
     }
 
-    private class UptimeTask implements Runnable {
+    private class Task implements Runnable {
         @Override
         public void run() {
             lastUptimeCheck = ZonedDateTime.now(ZoneOffset.UTC);
