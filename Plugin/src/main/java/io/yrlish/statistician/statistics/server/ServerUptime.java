@@ -38,7 +38,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
-public class Uptime {
+public class ServerUptime {
     private ZonedDateTime serverStarted;
     private ZonedDateTime lastUptimeCheck;
 

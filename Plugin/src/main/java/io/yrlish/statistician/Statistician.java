@@ -25,7 +25,8 @@
 package io.yrlish.statistician;
 
 import com.google.inject.Inject;
-import io.yrlish.statistician.statistics.server.Uptime;
+import io.yrlish.statistician.statistics.player.PlayerOnlineTime;
+import io.yrlish.statistician.statistics.server.ServerUptime;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -52,11 +53,9 @@ public class Statistician {
         // TODO: Load configuration
 
 
-        // TODO: Connect database
-
-
-        // TODO: Register listeners
-        Sponge.getEventManager().registerListeners(this, new Uptime());
+        // Register listeners
+        Sponge.getEventManager().registerListeners(this, new ServerUptime());
+        Sponge.getEventManager().registerListeners(this, new PlayerOnlineTime());
     }
 
     @Listener

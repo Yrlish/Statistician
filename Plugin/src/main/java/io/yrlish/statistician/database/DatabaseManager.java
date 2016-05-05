@@ -31,7 +31,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-    private SqlService sqlService;
+    private static SqlService sqlService;
     private String jdbcUrl = "jdbc:mysql://statistician:statistician@localhost/statistician"; // TODO: Use credentials from configuration
 
     public DatabaseManager() {
