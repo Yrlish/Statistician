@@ -26,6 +26,7 @@ package io.yrlish.statistician.statistics.player;
 
 import io.yrlish.statistician.Statistician;
 import io.yrlish.statistician.database.DatabaseManager;
+import io.yrlish.statistician.exception.ExceptionHandler;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.User;
@@ -123,7 +124,7 @@ public class PlayerOnlineTime {
                 }
 
             } catch (SQLException e) {
-                Statistician.getLogger().error("Could not query database", e);
+                ExceptionHandler.handle(e);
             }
         }
     }
