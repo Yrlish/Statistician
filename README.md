@@ -2,12 +2,20 @@
 The Statistician who keeps track of your server and its users.
 
 ## Requirements
-* [Sponge](https://spongepowered.org)
+* A [Sponge powered](https://spongepowered.org) Minecraft server
+* A MySQL database
 
 ## Features
-### Current
-* TODO
+### Server statistics
+* Server startup and shutdown times
+* Uptime statistics
+* Total playtime
 
-### Planned
-* Log server uptime, current players, top max players (month/ever)
-* Log player total online time, time since logged in, time when logged off
+### World statistics
+* None yet
+
+### Player statistics
+* Login and logout times
+* Total online time
+
+
