@@ -32,7 +32,7 @@
 
     <name>Statistician</name>
     <version>0.0.1</version>
-    <description>Sponge plugin that record statistics about the server and its users.</description>
+    <description>The Statistician who keeps track of your server and its users.</description>
     <url>https://bitbucket.org/YrlishTeam/statistician</url>
 
     <properties>
@@ -82,6 +82,11 @@
                 <version>2.6</version>
                 <configuration>
                     <outputDirectory>${outputDir}</outputDirectory>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
