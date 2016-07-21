@@ -27,6 +27,7 @@ package io.yrlish.statistician;
 import com.google.inject.Inject;
 import io.yrlish.statistician.config.Config;
 import io.yrlish.statistician.statistics.player.PlayerOnlineTime;
+import io.yrlish.statistician.statistics.player.PlayerTravelDistance;
 import io.yrlish.statistician.statistics.server.ServerUptime;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
@@ -68,6 +69,7 @@ public class Statistician {
         // Register listeners
         Sponge.getEventManager().registerListeners(this, new ServerUptime());
         Sponge.getEventManager().registerListeners(this, new PlayerOnlineTime());
+        Sponge.getEventManager().registerListeners(this, new PlayerTravelDistance());
     }
 
     @Listener
