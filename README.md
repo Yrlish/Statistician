@@ -17,5 +17,6 @@ The Statistician who keeps track of your server and its users.
 ### Player statistics
 * Login and logout times
 * Total online time
+* Total travel distance, NOT separated by travel method
 
 
