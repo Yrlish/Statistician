@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2016 Dennis Alexandersson
+ * Copyright (c) 2016 Dennis Alexandersson (Yrlish)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class Config {
+    private final static int CONFIG_VERSION = 1;
+
     private ConfigurationLoader<CommentedConfigurationNode> configLoader;
     private CommentedConfigurationNode rootNode;
     private Configuration configuration;
@@ -81,10 +83,11 @@ public class Config {
     }
 
     private void updateConfig() {
+        // If config doesn't exist, fill it with default values
         if (rootNode.getNode("Statistician", "ConfigVersion").isVirtual()) {
             rootNode.getNode("Statistician", "ConfigVersion")
                     .setComment("DON'T EDIT! It is used to keep track on when to update your config.")
-                    .setValue(1);
+                    .setValue(CONFIG_VERSION);
 
             rootNode.getNode("Statistician", "Database").setComment("The database credentials");
             rootNode.getNode("Statistician", "Database", "Host").setValue("localhost");
