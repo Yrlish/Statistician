@@ -1,0 +1,11 @@
+{
+  "name": "Statistician-webportal",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-materialize": "^0.1.9",
+    "angular-ui-router": "^0.3.1",
+    "jquery": "^3.1.0",
+    "materialize-css": "^0.97.7"
+  }
+}
