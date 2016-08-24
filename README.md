@@ -4,6 +4,7 @@ The Statistician who keeps track of your server and its users.
 ## Requirements
 * A [Sponge powered](https://spongepowered.org) Minecraft server
 * A MySQL database
+* A standalone webserver with [PHP](http://www.php.net)
 
 ## Features
 ### Server statistics
@@ -18,5 +19,3 @@ The Statistician who keeps track of your server and its users.
 * Login and logout times
 * Total online time
 * Total travel distance, NOT separated by travel method
-
-
