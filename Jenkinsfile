@@ -1,8 +1,9 @@
 node {
-	stage 'Checkout repository'
-
-	git url: 'git@bitbucket.org:YrlishTeam/statistician.git'
-	sh 'git clean -fdx'
+	stage ('Checkout repository') {
+		checkout scm
+		//git url: 'git@bitbucket.org:YrlishTeam/statistician.git'
+		sh 'git clean -fdx'		
+	}
 
 	def mvnHome = tool 'mvn'
 
@@ -23,7 +24,7 @@ node {
 			pom = readMavenPom file: 'pom.xml'
 			
 			def v = version()
-			sh "mv target/Statistician.jar target/Statistician-${v}-b${env.BUILD_NUMBER}.jar"
+			sh "mv target/Statistician.jar target/Statistician-${v}-${$env.BRANCH_NAME}-${env.BUILD_NUMBER}.jar"
 			archive 'target/*.jar'   
 		}
 	}
