@@ -24,7 +24,7 @@ node {
 			pom = readMavenPom file: 'pom.xml'
 			
 			def v = version()
-			sh "mv target/Statistician.jar target/Statistician-${v}-${$env.BRANCH_NAME}-${env.BUILD_NUMBER}.jar"
+			sh "mv target/Statistician.jar target/Statistician-${v}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}.jar"
 			archive 'target/*.jar'   
 		}
 	}
