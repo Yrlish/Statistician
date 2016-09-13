@@ -40,8 +40,17 @@ import org.spongepowered.api.plugin.Plugin;
 
 import java.io.File;
 
-@Plugin(id = PluginInfo.ID, name = PluginInfo.NAME, description = PluginInfo.DESCRIPTION, version = PluginInfo.VERSION, url = PluginInfo.URL)
+@Plugin(
+        id = "io.yrlish.statistician",
+        name = "Statistician",
+        version = Statistician.VERSION,
+        description = "The Statistician who keeps track of your server and its users.",
+        url = "https://bitbucket.org/YrlishTeam/statistician",
+        authors = {"Yrlish"})
 public class Statistician {
+
+    public static final String VERSION = "0.0.1";
+
     private static Logger logger;
     private static Statistician instance;
     private static Game game;
