@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CURRENT_DIR=$(pwd)
+BUILD_NUMBER=${BUILD_NUMBER}
 
 ####################
 ## PLUGIN RELEASE ##
