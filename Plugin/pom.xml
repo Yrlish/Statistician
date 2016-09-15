@@ -38,6 +38,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <outputDir>${basedir}/target</outputDir>
+        <build.number>DEV_BUILD</build.number>
     </properties>
 
     <issueManagement>
@@ -61,7 +62,7 @@
 
     <build>
         <defaultGoal>install</defaultGoal>
-        <finalName>${project.name}</finalName>
+        <finalName>${project.name}-${project.version}-${build.number}</finalName>
 
         <plugins>
             <plugin>
