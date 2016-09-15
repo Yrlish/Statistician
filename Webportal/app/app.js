@@ -27,20 +27,9 @@ $(function () {
         window.location = "#/";
     }
 
-    function loadMaterializeJS() {
-        $('.materialboxed').materialbox();
-        $('.collapsible').collapsible({
-            accordion: false // A setting that changes the collapsible behavior to expandable instead of the default accordion style
-        });
-    }
-
     $(window).on('hashchange', function () {
         $("html, body").scrollTop(0);
-
-        loadMaterializeJS();
     });
-
-    setTimeout(loadMaterializeJS, 200);
 });
 
 var statisticianApp = angular.module('statisticianApp', [
@@ -53,8 +42,46 @@ statisticianApp.config(function ($stateProvider, $urlRouterProvider) {
         .otherwise("/");
 
     $stateProvider
+    // Home
         .state('home', {
             url: '/',
             templateUrl: 'app/home/home.html'
+        })
+
+        // Server pages
+        .state('server', {
+            abstract: true,
+            url: '/server',
+            template: '<div ui-view></div>'
+        })
+        .state('server.home', {
+            url: '/',
+            templateUrl: 'app/server/home.html'
+        })
+
+        // World pages
+        .state('world', {
+            abstract: true,
+            url: '/world',
+            template: '<div ui-view></div>'
+        })
+        .state('world.home', {
+            url: '/',
+            templateUrl: 'app/world/home.html'
+        })
+
+        // Player pages
+        .state('player', {
+            abstract: true,
+            url: '/player',
+            template: '<div ui-view></div>'
+        })
+        .state('player.top10', {
+            url: '/top10',
+            templateUrl: 'app/player/top10.html'
+        })
+        .state('player.search', {
+            url: '/search',
+            templateUrl: 'app/player/search.html'
         })
 });
