@@ -24,6 +24,6 @@
 
 statisticianApp.controller('FrontPageController', ['$scope', function ($scope) {
     $scope.online_players = 12;
-    $scope.total_players = 87;
+    $scope.total_unique_players = 87;
     $scope.server_uptime = 97.5;
 }]);
