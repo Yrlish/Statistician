@@ -99,8 +99,8 @@ public class PlayerOnlineTime {
                 String sql = "INSERT INTO player_list (uuid, display_name) " +
                         "VALUES (?, ?) ON DUPLICATE KEY UPDATE display_name=VALUES(display_name);";
 
-                String sql2 = "INSERT INTO player_login_history (uuid, login, logout, ip) " +
-                        "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE login=VALUES(login), logout=VALUES(logout);";
+                String sql2 = "INSERT INTO player_login_history (uuid, login, lastActive, ip) " +
+                        "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE login=VALUES(login), lastActive=VALUES(lastActive);";
 
                 try (PreparedStatement preparedStatement = con.prepareStatement(sql);
                      PreparedStatement preparedStatement2 = con.prepareStatement(sql2)) {

@@ -9,10 +9,10 @@ CREATE TABLE IF NOT EXISTS player_list (
 DROP TABLE IF EXISTS player_login_history;
 
 CREATE TABLE IF NOT EXISTS player_login_history (
-  uuid   VARCHAR(36) NOT NULL,
-  ip     VARCHAR(24) NOT NULL,
-  login  TIMESTAMP   NOT NULL,
-  logout TIMESTAMP   NOT NULL,
+  uuid       VARCHAR(36) NOT NULL,
+  ip         VARCHAR(24) NOT NULL,
+  login      TIMESTAMP   NOT NULL,
+  lastActive TIMESTAMP   NOT NULL,
   PRIMARY KEY (uuid, login)
 );
 
