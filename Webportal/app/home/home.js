@@ -22,80 +22,8 @@
  * SOFTWARE.
  */
 
-html {
-    height: 100px;
-}
-
-body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-}
-
-main {
-    flex: 1 0 auto;
-}
-
-.bold-text {
-    font-weight: bold;
-}
-
-.underline-text {
-    text-decoration: underline;
-}
-
-@media (max-width: 600px) {
-    /* Classes to reorder row columns on mobile */
-    .reorder-columns {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .reorder-columns > .reorder-1 {
-        order: 1;
-    }
-
-    .reorder-columns > .reorder-2 {
-        order: 2;
-    }
-
-    .reorder-columns > .reorder-3 {
-        order: 3;
-    }
-
-    .reorder-columns > .reorder-4 {
-        order: 4;
-    }
-
-    .reorder-columns > .reorder-5 {
-        order: 5;
-    }
-
-    .reorder-columns > .reorder-6 {
-        order: 6;
-    }
-
-    .reorder-columns > .reorder-7 {
-        order: 7;
-    }
-
-    .reorder-columns > .reorder-8 {
-        order: 8;
-    }
-
-    .reorder-columns > .reorder-9 {
-        order: 9;
-    }
-
-    .reorder-columns > .reorder-10 {
-        order: 10;
-    }
-
-    .reorder-columns > .reorder-11 {
-        order: 11;
-    }
-
-    .reorder-columns > .reorder-12 {
-        order: 12;
-    }
-}
+statisticianApp.controller('FrontPageController', ['$scope', function ($scope) {
+    $scope.online_players = 12;
+    $scope.total_players = 87;
+    $scope.server_uptime = 97.5;
+}]);
