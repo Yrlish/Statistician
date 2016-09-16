@@ -55,7 +55,7 @@ public class PlayerOnlineTime {
         Scheduler scheduler = Sponge.getScheduler();
         scheduler.createTaskBuilder()
                 .async()
-                .interval(2, TimeUnit.SECONDS)
+                .interval(5, TimeUnit.SECONDS)
                 .execute(new Task())
                 .submit(Statistician.getInstance());
     }
