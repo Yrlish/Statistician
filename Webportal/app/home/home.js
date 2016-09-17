@@ -22,8 +22,18 @@
  * SOFTWARE.
  */
 
-statisticianApp.controller('FrontPageController', ['$scope', function ($scope) {
-    $scope.online_players = 12;
-    $scope.total_unique_players = 87;
-    $scope.server_uptime = 97.5;
-}]);
+statisticianApp.controller('FrontPageController', function ($scope, $http) {
+    $scope.total_online_players = 'loading';
+    $scope.total_unique_players = 'loading';
+    $scope.server_uptime = 'loading';
+
+    $http.get('api/api.php?getTotalPlayers').success(function (data) {
+        $scope.total_online_players = data.total_online_players;
+        $scope.total_unique_players = data.total_unique_players;
+    });
+
+    $http.get('api/api.php?getServerUptime').success(function (data) {
+        $scope.server_uptime = data.server_uptime + '%';
+
+    });
+});

@@ -39,7 +39,7 @@ class StatisticianDatabase
 
     public function getTotalOnlinePlayers()
     {
-        $sql = "SELECT count(*) AS online_players FROM player_login_history WHERE lastActive > now() - 30";
+        $sql = "SELECT count(*) AS total_online_players FROM player_login_history WHERE lastActive > now() - 30";
 
         $result = mysqli_query($this->con, $sql);
         if (!$result) {
@@ -47,6 +47,50 @@ class StatisticianDatabase
         }
 
         $row = $result->fetch_array();
-        return intval($row['online_players']);
+        return intval($row['total_online_players']);
+    }
+
+    public function getTotalUniquePlayers()
+    {
+        $sql = "SELECT count(*) AS total_unique_players FROM player_list";
+
+        $result = mysqli_query($this->con, $sql);
+        if (!$result) {
+            return intval(0);
+        }
+
+        $row = $result->fetch_array();
+        return intval($row['total_unique_players']);
+    }
+
+    public function getServerUptime()
+    {
+        $sql = "SELECT * FROM server_uptime";
+
+        $result = mysqli_query($this->con, $sql);
+        if (!$result) {
+            return intval(0);
+        }
+
+        $firstStart = null;
+        $downtime = 0;
+        $lastStop = 0;
+
+        while ($row = $result->fetch_array()) {
+            if ($firstStart === null) {
+                $firstStart = strtotime($row['start']);
+            }
+
+            if ($lastStop !== 0) {
+                $downtime += strtotime($row['start']) - $lastStop;
+            }
+
+            $lastStop = strtotime($row['stop']);
+        }
+
+        $diffSinceFirstStart = time() - $firstStart;
+        $uptime = $diffSinceFirstStart - $downtime;
+
+        return round($uptime / $downtime, 2);
     }
 }

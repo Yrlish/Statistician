@@ -28,31 +28,25 @@ require_once('StatisticianDatabase.php');
 
 $db = new StatisticianDatabase();
 
-if (isset($_GET['getTotalOnlinePlayers'])) {
+if (isset($_GET['getTotalPlayers'])) {
     print_json(array(
-        "total_online_players" => $db->getTotalOnlinePlayers()
+        "total_online_players" => $db->getTotalOnlinePlayers(),
+        "total_unique_players" => $db->getTotalUniquePlayers()
     ));
 }
 
+if (isset($_GET['getServerUptime'])) {
+    print_json(array(
+        "server_uptime" => $db->getServerUptime()
+    ));
+}
 
-// If no GETs where found, print status 404
-print_json(array(
-    "status" => 404
-));
+// print empty json object
+print_json(json_decode("{}"));
 
 function print_json($arr)
 {
     header('Content-Type: application/json');
-
-    if (!is_array($arr)) {
-        print_json(array(
-            "status" => 500
-        ));
-    }
-
-    if (!isset($arr['status'])) {
-        $arr['status'] = 200;
-    }
 
     print_r(json_encode($arr, JSON_PRETTY_PRINT));
 
