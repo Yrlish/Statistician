@@ -26,6 +26,7 @@ package io.yrlish.statistician;
 
 import com.google.inject.Inject;
 import io.yrlish.statistician.config.Config;
+import io.yrlish.statistician.statistics.player.PlayerDeath;
 import io.yrlish.statistician.statistics.player.PlayerOnlineTime;
 import io.yrlish.statistician.statistics.player.PlayerTravelDistance;
 import io.yrlish.statistician.statistics.server.ServerUptime;
@@ -69,6 +70,8 @@ public class Statistician {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
+        getLogger().info("Registering listeners...");
+
         // Load config
         Statistician.configManager = new Config(configDir);
         if (!configManager.load()) {
@@ -79,11 +82,12 @@ public class Statistician {
         Sponge.getEventManager().registerListeners(this, new ServerUptime());
         Sponge.getEventManager().registerListeners(this, new PlayerOnlineTime());
         Sponge.getEventManager().registerListeners(this, new PlayerTravelDistance());
+        Sponge.getEventManager().registerListeners(this, new PlayerDeath());
     }
 
     @Listener
     public void onServerInit(GameInitializationEvent event) {
-        // TODO: Init command(s)
+        // TODO: Setup commands
 
     }
 
