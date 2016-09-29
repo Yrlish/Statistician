@@ -27,7 +27,9 @@ package io.yrlish.statistician.statistics.player;
 import com.flowpowered.math.vector.Vector3d;
 import io.yrlish.statistician.Statistician;
 import io.yrlish.statistician.database.DatabaseManager;
+import io.yrlish.statistician.utilities.EntityHelper;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
@@ -37,6 +39,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -55,21 +58,20 @@ public class PlayerTravelDistance {
     @Listener
     public void onEntityMove(DisplaceEntityEvent.Move event) {
         // If the move event is in the same world
-        // Also check if the entity is an player
-        // Or an entity which has a passenger that is a player
         if (event.getFromTransform().getExtent().getUniqueId()
                 .equals(event.getToTransform().getExtent().getUniqueId())) {
-            if (event.getTargetEntity() instanceof Player) {
-                QueueItem item = new QueueItem((Player) event.getTargetEntity(),
-                        event.getFromTransform().getPosition(),
-                        event.getToTransform().getPosition());
-                queue.add(item);
-            } else if (event.getTargetEntity().getPassenger().isPresent() &&
-                    event.getTargetEntity().getPassenger().get() instanceof Player) {
-                QueueItem item = new QueueItem((Player) event.getTargetEntity().getPassenger().get(),
-                        event.getFromTransform().getPosition(),
-                        event.getToTransform().getPosition());
-                queue.add(item);
+
+            // Retrieve the entire entity stack
+            // For every player entity, register movement
+            Set<Entity> passengerStack = EntityHelper.getPassengerStack(event.getTargetEntity());
+
+            for (Entity entity : passengerStack) {
+                if (entity instanceof Player) {
+                    QueueItem item = new QueueItem((Player) entity,
+                            event.getFromTransform().getPosition(),
+                            event.getToTransform().getPosition());
+                    queue.add(item);
+                }
             }
         }
     }
