@@ -79,6 +79,8 @@ public class PlayerOnlineTime {
         if (lastJoinTime.containsKey(user.getUniqueId())) {
             QueueItem queueItem = new QueueItem(user.getUniqueId(), user.getName(), lastJoinTime.get(user.getUniqueId()), now, event.getConnection().getAddress());
             queue.add(queueItem);
+
+            lastJoinTime.remove(user.getUniqueId());
         }
     }
 
