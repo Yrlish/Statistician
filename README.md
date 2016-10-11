@@ -1,21 +1,36 @@
-# Statistician
+Statistician
+============
+
 The Statistician who keeps track of your server and its users.
 
-## Requirements
-* A [Sponge powered](https://spongepowered.org) Minecraft server
-* A MySQL database
-* A standalone webserver with [PHP](http://www.php.net)
+Requirements
+------------
 
-## Features
+-   A [Sponge powered](https://spongepowered.org) Minecraft server
+
+-   A [MySQL database](http://lmgtfy.com/?q=MySQL)
+
+-   A standalone webserver with [PHP](http://www.php.net)
+
+Features
+--------
+
 ### Server statistics
-* Server startup and shutdown times
-* Uptime statistics
-* Total playtime
+
+-   Server startup and shutdown times
+
+-   Uptime statistics
+
+-   Total playtime
 
 ### World statistics
-* None yet
+
+-   None yet
 
 ### Player statistics
-* Login and logout times
-* Total online time
-* Total travel distance, NOT separated by travel method
+
+-   Login and logout times
+
+-   Total online time
+
+-   Total travel distance, NOT separated by travel method
