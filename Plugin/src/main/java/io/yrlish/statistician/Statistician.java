@@ -42,7 +42,7 @@ import org.spongepowered.api.plugin.Plugin;
 import java.io.File;
 
 @Plugin(
-        id = "io.yrlish.statistician",
+        id = "io-yrlish-statistician",
         name = "Statistician",
         version = Statistician.VERSION,
         description = "The Statistician who keeps track of your server and its users.",

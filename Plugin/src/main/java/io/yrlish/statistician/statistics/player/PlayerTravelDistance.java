@@ -32,7 +32,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.scheduler.Scheduler;
 
 import java.sql.Connection;
@@ -56,7 +56,7 @@ public class PlayerTravelDistance {
     }
 
     @Listener
-    public void onEntityMove(DisplaceEntityEvent.Move event) {
+    public void onEntityMove(MoveEntityEvent event) {
         // If the move event is in the same world
         if (event.getFromTransform().getExtent().getUniqueId()
                 .equals(event.getToTransform().getExtent().getUniqueId())) {

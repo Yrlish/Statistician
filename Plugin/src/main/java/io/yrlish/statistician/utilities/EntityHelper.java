@@ -27,7 +27,7 @@ package io.yrlish.statistician.utilities;
 import org.spongepowered.api.entity.Entity;
 
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.List;
 import java.util.Set;
 
 public class EntityHelper {
@@ -46,10 +46,8 @@ public class EntityHelper {
         if (entity != null) {
             set.add(entity);
 
-            Optional<Entity> po = entity.getPassenger();
-            if (po.isPresent()) {
-                set.addAll(getPassengerStack(po.get()));
-            }
+            List<Entity> po = entity.getPassengers();
+            set.addAll(po);
         }
 
         return set;
