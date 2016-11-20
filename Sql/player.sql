@@ -27,9 +27,12 @@ CREATE TABLE IF NOT EXISTS player_travel_distance (
 DROP TABLE IF EXISTS player_deaths;
 
 CREATE TABLE IF NOT EXISTS player_deaths (
-  uuid   VARCHAR(36) NOT NULL,
-  type   VARCHAR(26) NOT NULL,
-  player VARCHAR(36) NULL,
-  amount INTEGER     NOT NULL,
-  PRIMARY KEY (uuid, type, player)
+  uuid    VARCHAR(36) NOT NULL,
+  type    VARCHAR(26) NOT NULL,
+  player  VARCHAR(36) NULL,
+  hostile VARCHAR(26) NULL,
+  amount  INTEGER     NOT NULL,
+  KEY (uuid),
+  UNIQUE (uuid, type, player),
+  UNIQUE (uuid, type, hostile)
 );

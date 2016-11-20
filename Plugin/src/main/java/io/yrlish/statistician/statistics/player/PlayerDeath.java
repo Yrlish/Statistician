@@ -27,10 +27,12 @@ package io.yrlish.statistician.statistics.player;
 import io.yrlish.statistician.Statistician;
 import io.yrlish.statistician.database.DatabaseManager;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.entity.living.Hostile;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.entity.damage.DamageType;
+import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
@@ -60,18 +62,32 @@ public class PlayerDeath {
     public void onEntityLivingDeath(DestructEntityEvent.Death event) {
         Living living = event.getTargetEntity();
 
-        if (living instanceof Player) {
-            Optional<DamageSource> last = event.getCause().last(DamageSource.class);
-            DamageSource damageSource = last.get();
-            damageSource.getType().getId();
+        if (living instanceof Player) { // check if death occurred on a player
+            Optional<DamageSource> cause = event.getCause().first(DamageSource.class);
+            Player player = (Player) living;
 
-            if (damageSource instanceof EntityDamageSource
-                    && ((EntityDamageSource) damageSource).getSource() instanceof Player) {
-                EntityDamageSource source = (EntityDamageSource) damageSource;
-                QueueItem queueItem = new QueueItem((Player) living, damageSource.getType(), (Player) source.getSource());
-                queue.add(queueItem);
-            } else {
-                QueueItem queueItem = new QueueItem((Player) living, damageSource.getType(), null);
+            if (cause.isPresent()) { // check if the cause of the death is present
+                DamageSource damageSource = cause.get();
+
+                if (damageSource instanceof EntityDamageSource) { // check if the damage source came from an entity
+                    EntityDamageSource source = (EntityDamageSource) damageSource;
+
+                    if (source.getSource() instanceof Player) { // check if that entity is a player
+                        QueueItem queueItem = new QueueItem(player, damageSource.getType(), (Player) source.getSource());
+                        queue.add(queueItem);
+                    } else if (source.getSource() instanceof Hostile) { // check if that entity is hostile
+                        QueueItem queueItem = new QueueItem(player, damageSource.getType(), (Hostile) source.getSource());
+                        queue.add(queueItem);
+                    } else { // damage source not from player or hostile entity
+                        QueueItem queueItem = new QueueItem(player, damageSource.getType());
+                        queue.add(queueItem);
+                    }
+                } else { // damage source is not from an entity
+                    QueueItem queueItem = new QueueItem(player, damageSource.getType());
+                    queue.add(queueItem);
+                }
+            } else { // if there was no cause, default to VOID damage type
+                QueueItem queueItem = new QueueItem(player, DamageTypes.VOID);
                 queue.add(queueItem);
             }
         }
@@ -83,8 +99,8 @@ public class PlayerDeath {
         public void run() {
             DatabaseManager databaseManager = new DatabaseManager();
             try (Connection con = databaseManager.getConnection()) {
-                String sql = "INSERT INTO player_deaths (uuid, type, player, amount) " +
-                        "VALUES (?, ?, ?, 1) ON DUPLICATE KEY UPDATE amount=amount + VALUES(amount);";
+                String sql = "INSERT INTO player_deaths (uuid, type, player, hostile, amount) " +
+                        "VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE amount=amount + VALUES(amount);";
 
                 try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
                     QueueItem item;
@@ -92,6 +108,7 @@ public class PlayerDeath {
                         preparedStatement.setString(1, item.getPlayer().getUniqueId().toString());
                         preparedStatement.setString(2, item.getDamageType().getId());
                         preparedStatement.setString(3, (item.getByPlayer() != null) ? item.getByPlayer().getUniqueId().toString() : null);
+                        preparedStatement.setString(4, (item.getByHostile() != null) ? item.getByHostile().getType().getName() : null);
                         preparedStatement.addBatch();
                     }
 
@@ -107,11 +124,26 @@ public class PlayerDeath {
         private final Player player;
         private final DamageType damageType;
         private final Player byPlayer;
+        private final Hostile byHostile;
 
+        public QueueItem(Player player, DamageType damageType) {
+            this.player = player;
+            this.damageType = damageType;
+            this.byPlayer = null;
+            this.byHostile = null;
+        }
         public QueueItem(Player player, DamageType damageType, Player byPlayer) {
             this.player = player;
             this.damageType = damageType;
             this.byPlayer = byPlayer;
+            this.byHostile = null;
+        }
+
+        public QueueItem(Player player, DamageType damageType, Hostile byHostile) {
+            this.player = player;
+            this.damageType = damageType;
+            this.byPlayer = null;
+            this.byHostile = byHostile;
         }
 
         public Player getPlayer() {
@@ -124,6 +156,10 @@ public class PlayerDeath {
 
         public Player getByPlayer() {
             return byPlayer;
+        }
+
+        public Hostile getByHostile() {
+            return byHostile;
         }
     }
 }
