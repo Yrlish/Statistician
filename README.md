@@ -1,4 +1,4 @@
-Statistician
+Statistician [![Build Status](https://travis-ci.org/Yrlish/Statistician.svg?branch=develop)](https://travis-ci.org/Yrlish/Statistician)
 ============
 
 The Statistician who keeps track of your server and its users.
