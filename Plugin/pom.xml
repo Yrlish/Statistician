@@ -62,7 +62,7 @@
 
     <build>
         <defaultGoal>install</defaultGoal>
-        <finalName>${project.name}-${project.version}-${build.number}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
 
         <plugins>
             <plugin>
