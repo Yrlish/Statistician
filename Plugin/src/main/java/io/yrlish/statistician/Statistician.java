@@ -37,6 +37,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.scheduler.Task;
 
 import java.io.File;
 
@@ -97,8 +98,9 @@ public class Statistician {
         getLogger().warn("Disabling plugin...");
         disabled = true;
 
-        Sponge.getEventManager().unregisterPluginListeners(this);
-        QueueManager.stop();
+        game.getEventManager().unregisterPluginListeners(this);
+        game.getCommandManager().getOwnedBy(this).forEach(game.getCommandManager()::removeMapping);
+        game.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
 
         getLogger().warn("Plugin disabled");
     }
