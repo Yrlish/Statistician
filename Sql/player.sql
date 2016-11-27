@@ -33,6 +33,5 @@ CREATE TABLE IF NOT EXISTS player_deaths (
   hostile VARCHAR(26) NULL,
   amount  INTEGER     NOT NULL,
   KEY (uuid),
-  UNIQUE (uuid, type, player),
-  UNIQUE (uuid, type, hostile)
+  UNIQUE (uuid, type, player, hostile)
 );
