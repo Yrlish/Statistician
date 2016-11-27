@@ -10,3 +10,6 @@ os:
 
 script:
   - cd Plugin && mvn test
+
+notifications:
+  email: false
