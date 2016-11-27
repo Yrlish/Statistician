@@ -24,12 +24,9 @@
 
 package io.yrlish.statistician.statistics.server;
 
-import io.yrlish.statistician.Statistician;
-import io.yrlish.statistician.database.DatabaseManager;
-import org.spongepowered.api.Sponge;
+import io.yrlish.statistician.statistics.Statistic;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.scheduler.Scheduler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,47 +34,33 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.concurrent.TimeUnit;
 
-public class ServerUptime {
+public class ServerUptime implements Statistic {
     private ZonedDateTime serverStarted;
     private ZonedDateTime lastUptimeCheck;
 
     @Listener
     public void onServerStarted(GameStartedServerEvent event) {
         serverStarted = ZonedDateTime.now(ZoneOffset.UTC);
-
-        Scheduler scheduler = Sponge.getScheduler();
-        scheduler.createTaskBuilder()
-                .async()
-                .interval(30, TimeUnit.SECONDS)
-                .execute(new Task())
-                .submit(Statistician.getInstance());
     }
 
-    private class Task implements Runnable {
-        @Override
-        public void run() {
-            lastUptimeCheck = ZonedDateTime.now(ZoneOffset.UTC);
+    @Override
+    public PreparedStatement[] getPreparedStatements(Connection connection) throws SQLException {
+        return new PreparedStatement[]{
+                connection.prepareStatement("INSERT INTO statistician.server_uptime (start, stop) " +
+                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE start=VALUES(start), stop=VALUES(stop);")
+        };
+    }
 
-            updateRow();
-        }
+    @Override
+    public void fillPreparedStatements(PreparedStatement[] preparedStatements) throws SQLException {
+        preparedStatements[0].setTimestamp(1, Timestamp.from(serverStarted.toInstant()));
+        preparedStatements[0].setTimestamp(2, Timestamp.from(lastUptimeCheck.toInstant()));
+        preparedStatements[0].addBatch();
+    }
 
-        private void updateRow() {
-            DatabaseManager databaseManager = new DatabaseManager();
-
-            try (Connection conn = databaseManager.getConnection()) {
-                String sql = "INSERT INTO statistician.server_uptime (start, stop) " +
-                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE start=VALUES(start), stop=VALUES(stop);";
-                try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-                    preparedStatement.setTimestamp(1, Timestamp.from(serverStarted.toInstant()));
-                    preparedStatement.setTimestamp(2, Timestamp.from(lastUptimeCheck.toInstant()));
-
-                    preparedStatement.execute();
-                }
-            } catch (SQLException e) {
-                Statistician.getLogger().error("Could not query database", e);
-            }
-        }
+    @Override
+    public void tick() {
+        lastUptimeCheck = ZonedDateTime.now(ZoneOffset.UTC);
     }
 }

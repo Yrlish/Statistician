@@ -26,10 +26,9 @@ package io.yrlish.statistician;
 
 import com.google.inject.Inject;
 import io.yrlish.statistician.config.Config;
-import io.yrlish.statistician.statistics.player.PlayerDeath;
-import io.yrlish.statistician.statistics.player.PlayerOnlineTime;
-import io.yrlish.statistician.statistics.player.PlayerTravelDistance;
-import io.yrlish.statistician.statistics.server.ServerUptime;
+import io.yrlish.statistician.database.queue.QueueManager;
+import io.yrlish.statistician.statistics.Statistic;
+import io.yrlish.statistician.statistics.StatisticLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -49,13 +48,14 @@ import java.io.File;
         url = "https://bitbucket.org/YrlishTeam/statistician",
         authors = {"Yrlish"})
 public class Statistician {
-
     public static final String VERSION = "0.0.1";
 
     private static Logger logger;
     private static Statistician instance;
     private static Game game;
     private static Config configManager;
+
+    private static boolean disabled = false;
 
     @Inject
     @ConfigDir(sharedRoot = false)
@@ -70,19 +70,37 @@ public class Statistician {
 
     @Listener
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        getLogger().info("Registering listeners...");
-
         // Load config
+        getLogger().debug("Loading configuration...");
         Statistician.configManager = new Config(configDir);
         if (!configManager.load()) {
+            getLogger().error("Failed loading configuration");
+            disablePlugin();
             return;
         }
+        getLogger().debug("Done");
 
         // Register listeners
-        Sponge.getEventManager().registerListeners(this, new ServerUptime());
-        Sponge.getEventManager().registerListeners(this, new PlayerOnlineTime());
-        Sponge.getEventManager().registerListeners(this, new PlayerTravelDistance());
-        Sponge.getEventManager().registerListeners(this, new PlayerDeath());
+        getLogger().debug("Loading statistics...");
+        for (Statistic statistic : StatisticLoader.getStatistics()) {
+            getLogger().debug("Loading statistic: {}", statistic.getClass().getSimpleName());
+            Sponge.getEventManager().registerListeners(this, statistic);
+        }
+        getLogger().debug("Done");
+
+        getLogger().debug("Starting the queue consumer...");
+        QueueManager.start();
+        getLogger().debug("Done");
+    }
+
+    private void disablePlugin() {
+        getLogger().warn("Disabling plugin...");
+        disabled = true;
+
+        Sponge.getEventManager().unregisterPluginListeners(this);
+        QueueManager.stop();
+
+        getLogger().warn("Plugin disabled");
     }
 
     @Listener
@@ -105,5 +123,9 @@ public class Statistician {
 
     public static Config getConfigManager() {
         return configManager;
+    }
+
+    public static boolean isDisabled() {
+        return disabled;
     }
 }

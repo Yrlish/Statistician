@@ -25,15 +25,12 @@
 package io.yrlish.statistician.statistics.player;
 
 import com.flowpowered.math.vector.Vector3d;
-import io.yrlish.statistician.Statistician;
-import io.yrlish.statistician.database.DatabaseManager;
+import io.yrlish.statistician.statistics.Statistic;
 import io.yrlish.statistician.utilities.EntityHelper;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
-import org.spongepowered.api.scheduler.Scheduler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,18 +38,11 @@ import java.sql.SQLException;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-public class PlayerTravelDistance {
+public class PlayerTravelDistance implements Statistic {
     Queue<QueueItem> queue = new LinkedBlockingQueue<>();
 
     public PlayerTravelDistance() {
-        Scheduler scheduler = Sponge.getScheduler();
-        scheduler.createTaskBuilder()
-                .async()
-                .interval(5, TimeUnit.SECONDS)
-                .execute(new Task())
-                .submit(Statistician.getInstance());
     }
 
     @Listener
@@ -76,32 +66,31 @@ public class PlayerTravelDistance {
         }
     }
 
-    private class Task implements Runnable {
-        @Override
-        public void run() {
-            DatabaseManager databaseManager = new DatabaseManager();
-            try (Connection con = databaseManager.getConnection()) {
-                String sql = "INSERT INTO player_travel_distance (uuid, distance) " +
-                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE distance=distance + VALUES(distance);";
+    @Override
+    public PreparedStatement[] getPreparedStatements(Connection connection) throws SQLException {
+        return new PreparedStatement[]{
+                connection.prepareStatement("INSERT INTO player_travel_distance (uuid, distance) " +
+                        "VALUES (?, ?) ON DUPLICATE KEY UPDATE distance=distance + VALUES(distance);")
+        };
+    }
 
-                try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
-                    QueueItem item;
-                    while ((item = queue.poll()) != null) {
-                        double distance = item.getFrom().distance(item.getTo());
+    @Override
+    public void fillPreparedStatements(PreparedStatement[] preparedStatements) throws SQLException {
+        QueueItem item;
+        while ((item = queue.poll()) != null) {
+            double distance = item.getFrom().distance(item.getTo());
 
-                        if (distance > 0 && distance < 10) {
-                            preparedStatement.setString(1, item.getPlayer().getUniqueId().toString());
-                            preparedStatement.setDouble(2, distance);
-                            preparedStatement.addBatch();
-                        }
-                    }
-
-                    preparedStatement.executeBatch();
-                }
-            } catch (SQLException e) {
-                Statistician.getLogger().error("Could not query database", e);
+            if (distance > 0 && distance < 10) {
+                preparedStatements[0].setString(1, item.getPlayer().getUniqueId().toString());
+                preparedStatements[0].setDouble(2, distance);
+                preparedStatements[0].addBatch();
             }
         }
+    }
+
+    @Override
+    public void tick() {
+
     }
 
     private class QueueItem {

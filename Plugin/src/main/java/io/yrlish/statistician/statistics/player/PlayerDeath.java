@@ -24,9 +24,7 @@
 
 package io.yrlish.statistician.statistics.player;
 
-import io.yrlish.statistician.Statistician;
-import io.yrlish.statistician.database.DatabaseManager;
-import org.spongepowered.api.Sponge;
+import io.yrlish.statistician.statistics.Statistic;
 import org.spongepowered.api.entity.living.Hostile;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
@@ -36,7 +34,6 @@ import org.spongepowered.api.event.cause.entity.damage.DamageTypes;
 import org.spongepowered.api.event.cause.entity.damage.source.DamageSource;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
-import org.spongepowered.api.scheduler.Scheduler;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,18 +41,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
-public class PlayerDeath {
+public class PlayerDeath implements Statistic {
     private Queue<QueueItem> queue = new LinkedBlockingQueue<>();
 
     public PlayerDeath() {
-        Scheduler scheduler = Sponge.getScheduler();
-        scheduler.createTaskBuilder()
-                .async()
-                .interval(5, TimeUnit.SECONDS)
-                .execute(new Task())
-                .submit(Statistician.getInstance());
     }
 
     @Listener
@@ -93,31 +83,31 @@ public class PlayerDeath {
         }
     }
 
-    private class Task implements Runnable {
+    @Override
+    public PreparedStatement[] getPreparedStatements(Connection connection) throws SQLException {
+        return new PreparedStatement[]{
+                connection.prepareStatement(
+                        "INSERT INTO player_deaths (uuid, type, player, hostile, amount) " +
+                                "VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE amount=amount + VALUES(amount);"
+                )
+        };
+    }
 
-        @Override
-        public void run() {
-            DatabaseManager databaseManager = new DatabaseManager();
-            try (Connection con = databaseManager.getConnection()) {
-                String sql = "INSERT INTO player_deaths (uuid, type, player, hostile, amount) " +
-                        "VALUES (?, ?, ?, ?, 1) ON DUPLICATE KEY UPDATE amount=amount + VALUES(amount);";
-
-                try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
-                    QueueItem item;
-                    while ((item = queue.poll()) != null) {
-                        preparedStatement.setString(1, item.getPlayer().getUniqueId().toString());
-                        preparedStatement.setString(2, item.getDamageType().getId());
-                        preparedStatement.setString(3, (item.getByPlayer() != null) ? item.getByPlayer().getUniqueId().toString() : null);
-                        preparedStatement.setString(4, (item.getByHostile() != null) ? item.getByHostile().getType().getName() : null);
-                        preparedStatement.addBatch();
-                    }
-
-                    preparedStatement.executeBatch();
-                }
-            } catch (SQLException e) {
-                Statistician.getLogger().error("Could not query database", e);
-            }
+    @Override
+    public void fillPreparedStatements(PreparedStatement[] preparedStatements) throws SQLException {
+        QueueItem item;
+        while ((item = queue.poll()) != null) {
+            preparedStatements[0].setString(1, item.getPlayer().getUniqueId().toString());
+            preparedStatements[0].setString(2, item.getDamageType().getId());
+            preparedStatements[0].setString(3, (item.getByPlayer() != null) ? item.getByPlayer().getUniqueId().toString() : null);
+            preparedStatements[0].setString(4, (item.getByHostile() != null) ? item.getByHostile().getType().getName() : null);
+            preparedStatements[0].addBatch();
         }
+    }
+
+    @Override
+    public void tick() {
+
     }
 
     private class QueueItem {
