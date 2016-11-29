@@ -30,4 +30,13 @@ define('DB_NAME', '');
 define('DB_USER', '');
 define('DB_PASS', '');
 
+// Stats configuration
+// If you want to disable a module
+// set it to false and it will not appear
+$stats = array(
+    'onlinePlayersTotal'    => true,
+    'onlinePlayersList'     => true,
+    'uptimeTotal'           => true,
+    'uptimeDetail'          => true
+);
 
