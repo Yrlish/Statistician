@@ -17,3 +17,7 @@ cache:
 
 notifications:
   email: false
+
+addons:
+    code_climate:
+        repo_token: 18c0befcb2a310010eebc4d6c489325f83dfdc62e7b924f3815f120a7f4b39fb
