@@ -24,41 +24,13 @@
  * SOFTWARE.
  */
 
-// Initialisation
+//TODO : Fill this thing
 
-define('STATS', true);
-require 'config.php';
-require 'StatisticianDatabase.php';
-$db = new StatisticianDatabase();
-
-// Required to easily display json response
-// TODO : move it in a separated file
-function print_json($arr){
-    header('Content-Type: application/json');
-    print_r(json_encode($arr, JSON_PRETTY_PRINT));
-    die();
-}
-
-/** BASIC ROUTING
- * We cannot force people to redirect to index.php
- * For various reasons (proxy, newbie...)
- * So we check for called ednpoints and we display if needed
- * Every endpoint has the same structure
- */
-
-if(!empty($_GET)){
-    // test required file
-
-    reset($_GET);
-    $endpoint = key($_GET);
-    $file = 'endpoints/'.$endpoint.'.php';
-
-    if(file_exists($file)){
-        include $file;
-    }
-    else{
-        print_json('API 404 : endpoint not found');
-    }
+if(defined('STATS')){
+    print_json(array(
+        "total_online_players" => $db->getTotalOnlinePlayers(),
+        "total_unique_players" => $db->getTotalUniquePlayers()
+    ));
 }
 else{
     print_json('API 403 : Access forbidden');
